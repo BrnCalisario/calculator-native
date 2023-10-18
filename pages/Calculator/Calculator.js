@@ -2,18 +2,33 @@ import { TouchableOpacity, View, Text } from "react-native"
 import MyButton from "../../components/MyButton"
 import { styles } from "./style"
 import { useState } from "react"
+import { useHistoryContext } from "../../contexts/HistoryContext"
 
 const Calculator = (props) => {
     
+    const isSymbol = (char) => "+-/*".includes(char)
+    //     return "+-/*".includes(char)
+    // }
+
     const [ conta, setConta ] = useState("")
 
+    const { addConta } = useHistoryContext()
+
     const increment = (value) => {
+
+        let strConta = conta.toString()
+
+        if(isSymbol(value) && isSymbol(strConta.slice(-1)))
+            return
+
         setConta(conta + value)
     }
 
     const calculate = () => {
         let result = eval(conta)
+        
         setConta(result)
+        addConta(conta  + " = " + result)
     }
 
     const clear = () => {
@@ -55,7 +70,7 @@ const Calculator = (props) => {
             </View>
             <View style={styles.buttonGroup}>
                 <MyButton text="Limpar" onPress={() => {clear()}}/>
-                <MyButton text="Histórico" />
+                <MyButton text="Histórico" onPress={() => props.navigation.navigate("History")} />
             </View>
         </View>
     )
